@@ -26,7 +26,9 @@ app.get("/",(req,res)=>
 io.on("connection",function(uniquesocket){
     console.log("connected")
 
-    
+    uniquesocket.on("hie",function(){
+        io.emit("hie papri")
+    })
 })
 
 server.listen(8000,function(){
