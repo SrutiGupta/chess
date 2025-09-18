@@ -13,7 +13,7 @@ const io=socket(server)
 const chess=new Chess()
 
 let players={}
-let currentPlayer="W";
+let currentPlayer="w";
 
 app.set("view engine", "ejs")
 app.use(express.static(path.join(__dirname,"public")))
@@ -26,10 +26,39 @@ app.get("/",(req,res)=>
 io.on("connection",function(uniquesocket){
     console.log("connected")
 
-    uniquesocket.on("hie",function(){
-        io.emit("hie papri")
-    })
+    //uniquesocket.on("hie",function(){
+      //  io.emit("hie papri")
+    if(!players.white)
+    {
+        players.white=uniquesocket.id;
+        uniquesocket.emit("playerRole", "w");
+    }
+    else 
+        if(!players.black)
+        {
+            players.black=uniquesocket.id;
+            uniquesocket.emit("playerRole", "b");
+        }
+        else{
+            uniquesocket.emit( "spectatorRole");
+        }
 })
+
+uniquesocket.on("disconnect",()=>{
+    if(uniquesocket.id===players.white)
+    {
+        delete players.white;
+    }
+    else if(uniquesocket.id===players.black)
+    {
+       delete players.black;
+    }
+})
+
+
+
+
+
 
 server.listen(8000,function(){
     console.log("listening at 8000" )
